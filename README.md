@@ -9,6 +9,7 @@ A simple web crawler designed to extract email addresses from websites while log
 - **Ignored URLs Log**: Maintains a log of URLs that were ignored due to invalid file extensions (e.g., `.pdf`, `.jpg`).
 - **Custom Headers**: Generates random user-agent headers to mimic real browser requests and avoid detection.
 - **Recursive Crawling**: Follows internal links to explore the entire website.
+- **Command-Line Interface**: Allows users to specify the starting URL and delay between requests via command-line arguments.
 
 ## Requirements
 
@@ -29,15 +30,14 @@ To run this project, ensure you have Python 3.x installed. The required packages
 
 ## Usage
 
-1. **Set the starting URL**:
-   - Open the `crawler.py` file and modify the `start_url` variable to the desired website URL you want to crawl.
-
-2. **Run the crawler**:
+1. **Run the crawler with command-line arguments**:
+   You can specify the starting URL and the delay between requests directly in the command line:
    ```bash
-   python crawler.py
+   python crawler.py -url https://example.com -delay 1
    ```
+   Replace `https://example.com` with the desired website URL and `1` with the delay in seconds.
 
-3. **Access log files**:
+2. **Access log files**:
    - The output will generate the following log files in the `crawler_logs/` directory:
 
    ```
@@ -61,8 +61,3 @@ The logs are structured in the following way:
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) - for HTML parsing.
-- [Requests](https://docs.python-requests.org/en/master/) - for making HTTP requests.
