@@ -6,6 +6,7 @@ import os
 import time
 import csv
 import random
+import argparse
 
 # Create a folder for logs if it doesn't exist
 log_folder = "crawler_logs"
@@ -50,7 +51,7 @@ def is_valid_url(url):
     invalid_extensions = ('.pdf', '.jpg', '.jpeg', '.png', '.gif', '.zip', '.docx', '.pptx')
     return not url.endswith(invalid_extensions)
 
-def crawl(url, website_folder):
+def crawl(url, website_folder, delay):
     """Crawl the given URL, extract emails, and follow internal links."""
     if url in visited_urls or not is_valid_url(url):
         if not is_valid_url(url):
@@ -85,22 +86,32 @@ def crawl(url, website_folder):
             href = link['href']
             next_url = urljoin(base_url, href)
             if urlparse(next_url).netloc == urlparse(base_url).netloc:
-                time.sleep(0.5)  # Delay of 0.5 seconds to avoid overwhelming the server
-                crawl(next_url, website_folder)
+                time.sleep(delay)  # Use the provided delay
+                crawl(next_url, website_folder, delay)
     
     except requests.exceptions.RequestException as e:
         # Log the error and save the URL to the error log
         print(f"Error crawling {url}: {e}")
         save_to_file(os.path.join(website_folder, "error_urls.txt"), f"{url} - {e}")
 
+# Function to set up argument parsing
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Web Crawler for extracting emails.')
+    parser.add_argument('-url', type=str, required=True, help='The starting website URL to crawl.')
+    parser.add_argument('-delay', type=float, default=0.5, help='Delay in seconds between requests (default: 0.5).')
+    return parser.parse_args()
+
 # Start crawling from the initial URL
-start_url = 'https://puneruralpolice.gov.in'
-website_name = urlparse(start_url).netloc.replace('.', '_')  # Create a safe folder name
-website_folder = create_website_folder(website_name)
+if __name__ == '__main__':
+    args = parse_arguments()
+    start_url = args.url
+    delay = args.delay
+    website_name = urlparse(start_url).netloc.replace('.', '_')  # Create a safe folder name
+    website_folder = create_website_folder(website_name)
 
-crawl(start_url, website_folder)
+    crawl(start_url, website_folder, delay)
 
-# Summary of the crawl
-print("\n--- Crawl Summary ---")
-print(f"Total URLs crawled: {len(visited_urls)}")
-print(f"Total emails found: {len(found_emails)}")
+    # Summary of the crawl
+    print("\n--- Crawl Summary ---")
+    print(f"Total URLs crawled: {len(visited_urls)}")
+    print(f"Total emails found: {len(found_emails)}")
